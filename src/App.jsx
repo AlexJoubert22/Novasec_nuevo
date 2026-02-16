@@ -1,55 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import Lenis from 'lenis';
-import PreloaderOverlay from './components/Preloader';
+import React, { useEffect } from 'react';
+import Preloader from './components/Preloader';
+import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import PainPoint from './components/PainPoint';
-import BentoGrid from './components/BentoGrid';
-import Timeline from './components/Timeline';
+import ProblemSolution from './components/ProblemSolution';
+import AboutUs from './components/AboutUs';
+import BentoGrid from './components/BentoGrid'; // Stacking Services + Summary
 import Footer from './components/Footer';
+import Lenis from 'lenis';
 
 function App() {
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    // Initialize Lenis
+    // Scroll to top on load
+    window.scrollTo(0, 0);
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: 'vertical',
-      gestureDirection: 'vertical',
       smooth: true,
-      mouseMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
     });
 
-    const raf = (time) => {
+    function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
-    };
-
+    }
     requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
   }, []);
 
   return (
-    <div className="bg-void-black min-h-screen text-off-white selection:bg-white selection:text-black">
-      {/* Noise Overlay */}
+    <div className="bg-[#050505] min-h-screen text-white selection:bg-indigo-500/30 font-sans">
       <div className="noise-overlay" />
 
-      {/* Preloader */}
-      <PreloaderOverlay onAnimationComplete={() => setLoading(false)} />
+      <Preloader />
 
-      <main className="relative z-10 w-full overflow-hidden">
+      <Navbar />
+
+      <main>
+        {/* PARALLAX HERO (Fixed/Sticky behind) */}
         <Hero />
-        <PainPoint />
-        <BentoGrid />
-        <Timeline />
-        <Footer />
+
+        {/* RELATIVE CONTENT (Slides Over Hero) 
+            Use negative margin to pull content up over the "fading" hero 
+        */}
+        <div className="relative z-30 bg-[#050505] shadow-[0_-50px_100px_rgba(5,5,5,1)] mt-[-50vh]">
+          <AboutUs />
+          <ProblemSolution />
+          <BentoGrid /> {/* Includes Services Stack & Summary Grid */}
+        </div>
       </main>
+
+      <div id="contact" className="relative z-30 bg-[#050505]">
+        <Footer />
+      </div>
     </div>
   );
 }

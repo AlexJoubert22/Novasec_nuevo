@@ -1,96 +1,101 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import heroBg from '../assets/fondo_hero.jpeg';
 
 const Hero = () => {
     const containerRef = useRef(null);
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-    const handleMouseMove = (e) => {
-        if (containerRef.current) {
-            const rect = containerRef.current.getBoundingClientRect();
-            setMousePosition({
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top,
-            });
+    // Mapeamos el scroll del contenedor
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"]
+    });
+
+    // PARALLAX & ZOOM INTENSO (Deep Space Effect)
+    // Sync with AboutUs Entry:
+    // AboutUs starts at Scale 1.2, Blur 20px. 
+    // Hero ends at Scale 1.2, Blur 20px.
+    const scale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
+    const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+    const opacity = useTransform(scrollYProgress, [0, 0.8, 1], [1, 0.5, 0]);
+    const blur = useTransform(scrollYProgress, [0, 0.5, 1], ["0px", "0px", "20px"]); // Start blurring late
+
+    // Staggered Text Animation
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1, delayChildren: 0.3 }
         }
     };
 
-    const revealVariant = {
-        hidden: { y: "100%" },
-        visible: {
-            y: "0%",
-            transition: {
-                duration: 1.2,
-                ease: [0.22, 1, 0.36, 1],
-                delay: 2.6 // Wait for preloader
-            }
+    const item = {
+        hidden: { y: 100, opacity: 0, rotate: 5 },
+        show: {
+            y: 0, opacity: 1, rotate: 0,
+            transition: { type: "spring", damping: 20, stiffness: 100 }
         }
     };
-
-    const revealVariant2 = {
-        hidden: { y: "100%" },
-        visible: {
-            y: "0%",
-            transition: {
-                duration: 1.2,
-                ease: [0.22, 1, 0.36, 1],
-                delay: 2.8
-            }
-        }
-    };
-
 
     return (
-        <section
-            ref={containerRef}
-            onMouseMove={handleMouseMove}
-            className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-void-black"
-        >
-            {/* Spotlight Effect */}
-            <div
-                className="absolute pointer-events-none w-[600px] h-[600px] bg-accent-glow rounded-full mix-blend-soft-light filter blur-3xl opacity-20"
-                style={{
-                    transform: `translate(${mousePosition.x - 300}px, ${mousePosition.y - 300}px)`,
-                    transition: "transform 0.1s ease-out"
-                }}
-            />
+        <section ref={containerRef} id="hero" className="relative h-[200vh] w-full overflow-hidden bg-[#050505]">
 
-            {/* Content */}
-            <div className="relative z-10 text-center max-w-6xl px-4">
-                <div className="overflow-hidden mb-2 p-2">
-                    <motion.h1
-                        initial="hidden"
-                        animate="visible"
-                        variants={revealVariant}
-                        className="text-5xl md:text-8xl font-display font-bold tracking-tighter text-off-white leading-tight"
-                    >
-                        Tu negocio merece <br /> estar en internet.
-                    </motion.h1>
-                </div>
+            {/* STICKY CONTENT CONTAINER */}
+            <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
 
-                <div className="overflow-hidden p-2">
-                    <motion.h2
-                        initial="hidden"
-                        animate="visible"
-                        variants={revealVariant2}
-                        className="text-2xl md:text-4xl font-display font-medium tracking-tight text-white/80"
-                    >
-                        Nosotros hacemos que sea fácil.
-                    </motion.h2>
+                {/* BACKGROUND IMAGE WITH PARALLAX & BLUR */}
+                <motion.div
+                    style={{ scale, y, opacity, filter: useTransform(blur, value => `blur(${value})`) }}
+                    className="absolute inset-0 z-0"
+                >
+                    <img
+                        src={heroBg}
+                        alt="Deep Space Background"
+                        className="w-full h-full object-cover opacity-80"
+                    />
+                    {/* FADE TO BLACK GRADIENT (Bottom) */}
+                    <div className="absolute bottom-0 left-0 w-full h-[50vh] bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent z-10" />
+                </motion.div>
+
+                {/* TEXT CONTENT */}
+                <div className="relative z-20 text-center px-4 mix-blend-screen flex flex-col items-center">
+                    <motion.div style={{ filter: useTransform(blur, value => `blur(${value})`) }}>
+
+                        {/* FRAMED TITLE CONTAINER */}
+                        <div className="relative inline-block border-[1px] border-white/20 p-8 md:p-14 backdrop-blur-sm bg-white/[0.02]">
+                            {/* Decorative Corners */}
+                            <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-white" />
+                            <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-white" />
+                            <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-white" />
+                            <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-white" />
+
+                            <motion.h1
+                                variants={container}
+                                initial="hidden"
+                                animate="show"
+                                className="text-6xl md:text-[10rem] font-bold tracking-tighter text-white leading-[0.85]"
+                            >
+                                {"NOVASEC".split("").map((char, i) => (
+                                    <motion.span key={i} variants={item} className="inline-block origin-bottom">
+                                        {char}
+                                    </motion.span>
+                                ))}
+                            </motion.h1>
+                        </div>
+
+                        {/* SUBTITLE */}
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 1.5, duration: 1 }}
+                            className="text-base md:text-xl lg:text-3xl text-white/80 mt-8 md:mt-12 font-light tracking-wide font-serif italic px-4"
+                        >
+                            Tecnología moderna con trato humano.
+                        </motion.p>
+                    </motion.div>
                 </div>
             </div>
-
-            {/* Scroll Indicator */}
-            <motion.div
-                className="absolute bottom-10 left-1/2 -translate-x-1/2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 3.5, duration: 1 }}
-            >
-                <div className="w-[1px] h-24 bg-gradient-to-b from-transparent via-white/30 to-transparent" />
-            </motion.div>
         </section>
     );
 };
-
 export default Hero;

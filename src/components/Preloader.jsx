@@ -97,7 +97,7 @@ export const PreloaderOverlay = ({ onAnimationComplete }) => {
     useEffect(() => {
         if (startSplit) {
             setTimeout(() => {
-                onAnimationComplete();
+                if (onAnimationComplete) onAnimationComplete();
             }, 1000); // content revealed
         }
     }, [startSplit, onAnimationComplete]);
