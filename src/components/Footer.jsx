@@ -1,18 +1,23 @@
-import React from 'react';
-import { motion } from 'framer-motion';
 import { Mail, Phone, ArrowUpRight, ShieldCheck, Zap } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const Footer = () => {
+    const { t } = useLanguage();
+    const handleAuditClick = (e) => {
+        if (e) e.preventDefault();
+        window.location.href = "mailto:info@novasec.com?subject=Free%20Audit%20Request&body=I%20am%20interested%20in%20a%20free%20audit%20for%20my%20project.%20Here%20are%20my%20details:";
+    };
+
     return (
         <footer className="relative bg-[#050505] text-white pt-20 pb-10 overflow-hidden">
 
             <div className="container mx-auto px-6 relative z-10">
 
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-4">
-                        Ready to Start?
+                    <h2 id="ready-to-start" className="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-4">
+                        {t('footer.ready')}
                     </h2>
-                    <p className="text-white/50 text-lg">Your transformation in 3 simple steps.</p>
+                    <p className="text-white/50 text-lg">{t('footer.steps_subtitle')}</p>
                 </div>
 
                 {/* 3 STEPS PROCESS (Premium Neon Boxes) */}
@@ -26,14 +31,26 @@ const Footer = () => {
                             <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 border border-white/5 group-hover:border-cyan-500/30 group-hover:scale-110 transition-all duration-500">
                                 <Mail className="w-6 h-6 text-white group-hover:text-cyan-400 transition-colors" />
                             </div>
-                            <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-cyan-100 transition-colors">First Contact.</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-cyan-100 transition-colors">{t('footer.step1_title')}</h3>
                             <p className="text-white/60 text-sm leading-relaxed mb-6 group-hover:text-cyan-100/80 transition-colors">
-                                Send us an email or give us a call. We start the conversation immediately.
+                                {t('footer.step1_desc')}
                             </p>
                         </div>
-                        <div className="relative z-10 space-y-2">
-                            <a href="mailto:hola@novasec.com" className="block text-lg font-medium text-white/80 hover:text-cyan-400 transition-colors">hola@novasec.com</a>
-                            <a href="tel:+34600000000" className="block text-lg font-medium text-white/80 hover:text-cyan-400 transition-colors">+34 000 000 000</a>
+                        <div className="relative z-10 space-y-4">
+                            <a href="mailto:info@novasec.com" className="block text-lg font-medium text-white/80 hover:text-cyan-400 transition-colors">info@novasec.com</a>
+
+                            <a
+                                href="https://wa.me/34620878858"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] text-white font-bold rounded-xl hover:bg-[#20bd5a] hover:scale-[1.02] transition-all shadow-[0_10px_30px_rgba(37,211,102,0.2)] active:scale-95"
+                            >
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                                </span>
+                                <span>{t('footer.step1_wa')}</span>
+                            </a>
                         </div>
                     </div>
 
@@ -46,19 +63,19 @@ const Footer = () => {
                             <div className="w-14 h-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-6 border border-indigo-500/30 group-hover:border-indigo-400 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-500">
                                 <ShieldCheck className="w-7 h-7 text-indigo-400 group-hover:text-indigo-200" />
                             </div>
-                            <h3 className="text-2xl font-bold mb-4 text-white">Free Analysis.</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-white">{t('footer.step2_title')}</h3>
                             <p className="text-indigo-200/60 text-sm leading-relaxed mb-6">
-                                We analyze your current bottlenecks and security gaps completely free of charge. No commitment required.
+                                {t('footer.step2_desc')}
                             </p>
                         </div>
 
-                        <a
-                            href="mailto:contact@novasec.com?subject=Free%20Audit%20Request&body=I%20am%20interested%20in%20a%20free%20audit%20for%20my%20project.%20Here%20are%20my%20details:"
-                            className="relative z-10 w-full py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-50 hover:shadow-lg transition-all group-hover:scale-[1.02]"
+                        <button
+                            onClick={handleAuditClick}
+                            className="relative z-10 w-full py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-50 hover:shadow-lg transition-all group-hover:scale-[1.02] cursor-pointer"
                         >
-                            <span>Start Free Audit</span>
+                            <span>{t('footer.step2_cta')}</span>
                             <ArrowUpRight className="w-4 h-4" />
-                        </a>
+                        </button>
                     </div>
 
                     {/* STEP 03: VELOCITY */}
@@ -69,14 +86,14 @@ const Footer = () => {
                             <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 border border-white/5 group-hover:border-amber-500/30 group-hover:scale-110 transition-all duration-500">
                                 <Zap className="w-6 h-6 text-white group-hover:text-amber-400 transition-colors" />
                             </div>
-                            <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-amber-100 transition-colors">Instant Solution.</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-amber-100 transition-colors">{t('footer.step3_title')}</h3>
                             <p className="text-white/60 text-sm leading-relaxed mb-6 group-hover:text-amber-100/80 transition-colors">
-                                We solve the problems with speed and efficiency. Deployment in days, not months.
+                                {t('footer.step3_desc')}
                             </p>
                         </div>
                         <div className="relative z-10 p-4 bg-white/5 rounded-xl border border-white/5 group-hover:bg-amber-500/10 group-hover:border-amber-500/20 transition-colors">
                             <p className="text-xs text-white/60 font-mono group-hover:text-amber-200/80 italic">
-                                "Novasec aligned our digital infrastructure in 48 hours."
+                                "{t('footer.step3_quote')}"
                             </p>
                         </div>
                     </div>
@@ -87,7 +104,7 @@ const Footer = () => {
                 <div className="border-t border-white/10 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
                     <h2 className="text-2xl font-bold tracking-tighter">NOVASEC.</h2>
                     <div className="text-sm text-white/40">
-                        © 2024 Novasec. All rights reserved.
+                        {t('footer.rights')}
                     </div>
                 </div>
 

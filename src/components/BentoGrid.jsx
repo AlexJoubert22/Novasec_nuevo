@@ -3,81 +3,13 @@ import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence, 
 import {
     Cpu, Globe, MessageSquare, Search, RefreshCw, PenTool, BarChart3, ArrowRight
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
-const services = [
-    {
-        icon: Cpu,
-        title: "Neural Automation",
-        shortLabel: "AI Agents",
-        desc: "We build custom AI agents that handle repetitive tasks.",
-        color: "bg-cyan-500",
-        textColor: "text-cyan-400",
-        shadowColor: "rgba(34, 211, 238, 0.8)", // Bright Cyan Glow
-        id: "01"
-    },
-    {
-        icon: Globe,
-        title: "Smart Web Ecosystems",
-        shortLabel: "Web Ecosystems",
-        desc: "Living digital environments that adapt to user behavior.",
-        color: "bg-indigo-500",
-        textColor: "text-indigo-400",
-        shadowColor: "rgba(129, 140, 248, 0.8)", // Bright Indigo Glow
-        id: "02"
-    },
-    {
-        icon: MessageSquare,
-        title: "AI Chatbots & Agents",
-        shortLabel: "Chatbots",
-        desc: "24/7 intelligent support that sounds human.",
-        color: "bg-fuchsia-500",
-        textColor: "text-fuchsia-400",
-        shadowColor: "rgba(232, 121, 249, 0.8)", // Bright Fuchsia Glow
-        id: "03"
-    },
-    {
-        icon: Search,
-        title: "Technical Audits",
-        shortLabel: "Audits",
-        desc: "Deep-dive analysis of your current infrastructure.",
-        color: "bg-pink-500",
-        textColor: "text-pink-400",
-        shadowColor: "rgba(244, 114, 182, 0.8)", // Bright Pink Glow
-        id: "04"
-    },
-    {
-        icon: RefreshCw,
-        title: "Web Re-Engineering",
-        shortLabel: "Re-Engineering",
-        desc: "Refactor and modernize without breaking logic.",
-        color: "bg-rose-500",
-        textColor: "text-rose-400",
-        shadowColor: "rgba(251, 113, 133, 0.8)", // Bright Rose Glow
-        id: "05"
-    },
-    {
-        icon: PenTool,
-        title: "Brand Architecture",
-        shortLabel: "Branding",
-        desc: "Visual identity that commands authority.",
-        color: "bg-orange-500",
-        textColor: "text-orange-400",
-        shadowColor: "rgba(251, 146, 60, 0.8)", // Bright Orange Glow
-        id: "06"
-    },
-    {
-        icon: BarChart3,
-        title: "Growth Engineering",
-        shortLabel: "Growth",
-        desc: "Data-driven marketing structures.",
-        color: "bg-yellow-400",
-        textColor: "text-yellow-300",
-        shadowColor: "rgba(253, 224, 71, 0.8)", // Bright Yellow Glow
-        id: "07"
-    }
-];
+// This array can now be removed from top-level if we move it inside BentoGrid or keep it but it needs translations
+// I'll move it inside BentoGrid or pass t to it.
+// I've already moved it inside BentoGrid in previous chunks.
 
-const Card = ({ i, title, desc, icon: Icon, color, textColor, shadowColor, progress, range, targetScale }) => {
+const Card = ({ i, title, desc, icon: Icon, color, textColor, shadowColor, progress, range, targetScale, t, scrollToContact }) => {
     const container = useRef(null);
     const scale = useTransform(progress, range, [1, targetScale]);
 
@@ -98,7 +30,7 @@ const Card = ({ i, title, desc, icon: Icon, color, textColor, shadowColor, progr
                                     <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                                 </div>
                                 <span className="font-mono text-xs text-white/40 tracking-widest uppercase">
-                                    Service {services[i]?.id || `0${i + 1}`}
+                                    {t('bento_grid.service')} {t(`bento_grid.services.${i}.id`)}
                                 </span>
                             </div>
                             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-4 md:mb-6 text-white">
@@ -108,8 +40,11 @@ const Card = ({ i, title, desc, icon: Icon, color, textColor, shadowColor, progr
                                 {desc}
                             </p>
                         </div>
-                        <div className="flex items-center gap-2 text-sm font-medium cursor-pointer group w-max text-white mt-4 md:mt-0">
-                            <span className="group-hover:text-white/80 transition-colors">Start Project</span>
+                        <div
+                            onClick={scrollToContact}
+                            className="flex items-center gap-2 text-sm font-medium cursor-pointer group w-max text-white mt-4 md:mt-0"
+                        >
+                            <span className="group-hover:text-white/80 transition-colors">{t('bento_grid.start_project')}</span>
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
                     </div>
@@ -134,8 +69,87 @@ const Card = ({ i, title, desc, icon: Icon, color, textColor, shadowColor, progr
 }
 
 const BentoGrid = () => {
+    const { t } = useLanguage();
     const containerRef = useRef(null);
     const isInView = useInView(containerRef, { margin: "-10%" });
+
+    const services = [
+        {
+            icon: Cpu,
+            title: t('bento_grid.services.0.title'),
+            shortLabel: t('bento_grid.services.0.shortLabel'),
+            desc: t('bento_grid.services.0.desc'),
+            color: "bg-cyan-500",
+            textColor: "text-cyan-400",
+            shadowColor: "rgba(34, 211, 238, 0.8)",
+            id: "01"
+        },
+        {
+            icon: Globe,
+            title: t('bento_grid.services.1.title'),
+            shortLabel: t('bento_grid.services.1.shortLabel'),
+            desc: t('bento_grid.services.1.desc'),
+            color: "bg-indigo-500",
+            textColor: "text-indigo-400",
+            shadowColor: "rgba(129, 140, 248, 0.8)",
+            id: "02"
+        },
+        {
+            icon: MessageSquare,
+            title: t('bento_grid.services.2.title'),
+            shortLabel: t('bento_grid.services.2.shortLabel'),
+            desc: t('bento_grid.services.2.desc'),
+            color: "bg-fuchsia-500",
+            textColor: "text-fuchsia-400",
+            shadowColor: "rgba(232, 121, 249, 0.8)",
+            id: "03"
+        },
+        {
+            icon: Search,
+            title: t('bento_grid.services.3.title'),
+            shortLabel: t('bento_grid.services.3.shortLabel'),
+            desc: t('bento_grid.services.3.desc'),
+            color: "bg-pink-500",
+            textColor: "text-pink-400",
+            shadowColor: "rgba(244, 114, 182, 0.8)",
+            id: "04"
+        },
+        {
+            icon: RefreshCw,
+            title: t('bento_grid.services.4.title'),
+            shortLabel: t('bento_grid.services.4.shortLabel'),
+            desc: t('bento_grid.services.4.desc'),
+            color: "bg-rose-500",
+            textColor: "text-rose-400",
+            shadowColor: "rgba(251, 113, 133, 0.8)",
+            id: "05"
+        },
+        {
+            icon: PenTool,
+            title: t('bento_grid.services.5.title'),
+            shortLabel: t('bento_grid.services.5.shortLabel'),
+            desc: t('bento_grid.services.5.desc'),
+            color: "bg-orange-500",
+            textColor: "text-orange-400",
+            shadowColor: "rgba(251, 146, 60, 0.8)",
+            id: "06"
+        },
+        {
+            icon: BarChart3,
+            title: t('bento_grid.services.6.title'),
+            shortLabel: t('bento_grid.services.6.shortLabel'),
+            desc: t('bento_grid.services.6.desc'),
+            color: "bg-yellow-400",
+            textColor: "text-yellow-300",
+            shadowColor: "rgba(253, 224, 71, 0.8)",
+            id: "07"
+        }
+    ];
+
+    const handleAuditClick = (e) => {
+        if (e) e.preventDefault();
+        window.location.href = "mailto:info@novasec.com?subject=Free%20Audit%20Request&body=I%20am%20interested%20in%20a%20free%20audit%20for%20my%20project.%20Here%20are%20my%20details:";
+    };
 
     const { scrollYProgress } = useScroll({
         target: containerRef,
@@ -199,9 +213,9 @@ const BentoGrid = () => {
                 className="pt-32 pb-10 text-center sticky top-0 bg-[#050505] z-0 pointer-events-none w-full origin-top"
             >
                 <h2 className="text-6xl md:text-8xl font-bold tracking-tighter text-white mb-6 leading-none">
-                    COMPLEXITY. <br />
+                    {t('bento_grid.header')} <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 font-serif italic">
-                        Diluted.
+                        {t('bento_grid.header_span')}
                     </span>
                 </h2>
                 <div className="w-[1px] h-20 bg-gradient-to-b from-white/50 to-transparent mx-auto mt-10" />
@@ -220,7 +234,7 @@ const BentoGrid = () => {
                             className="fixed left-6 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-8 items-center mix-blend-difference pointer-events-none"
                         >
                             <div className="text-white/40 font-mono text-xs rotate-180" style={{ writingMode: 'vertical-rl' }}>
-                                SERVICE_INDEX
+                                {t('bento_grid.index_label')}
                             </div>
                             <div className="text-4xl font-bold text-white tabular-nums">
                                 0{activeCard + 1}
@@ -305,6 +319,8 @@ const BentoGrid = () => {
                         progress={scrollYProgress}
                         range={[i * (1 / services.length), 1]}
                         targetScale={targetScale}
+                        t={t}
+                        scrollToContact={scrollToContact}
                     />
                 })}
             </div>
@@ -323,8 +339,8 @@ const BentoGrid = () => {
                         <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
                         <div className="relative z-10 text-center mb-10">
-                            <h3 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">Our Capabilities</h3>
-                            <p className="text-indigo-200/60 font-light">Your entire digital ecosystem, engineered.</p>
+                            <h3 id="our-capabilities" className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">{t('bento_grid.capabilities_title')}</h3>
+                            <p className="text-indigo-200/60 font-light">{t('bento_grid.capabilities_subtitle')}</p>
                         </div>
 
                         <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -342,9 +358,9 @@ const BentoGrid = () => {
                         <div className="relative z-10 md:col-span-4 mt-8 text-center">
                             <button
                                 onClick={scrollToContact}
-                                className="px-8 md:px-10 py-3 md:py-4 bg-white text-black rounded-full font-bold text-lg hover:bg-indigo-100 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] pointer-events-auto"
+                                className="px-8 md:px-10 py-3 md:py-4 bg-white text-black rounded-full font-bold text-lg hover:bg-indigo-100 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] pointer-events-auto cursor-pointer"
                             >
-                                Start Your Transformation
+                                {t('bento_grid.cta_transformation')}
                             </button>
                         </div>
                     </div>

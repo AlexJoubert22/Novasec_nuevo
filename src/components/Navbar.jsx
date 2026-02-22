@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
+import { Menu, X, ArrowUpRight, Globe } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const Navbar = () => {
+    const { language, setLanguage, toggleLanguage, t } = useLanguage();
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('');
@@ -12,17 +14,35 @@ const Navbar = () => {
             setScrolled(window.scrollY > 20);
 
             // Detect active section
-            const sections = ['#hero', '#about', '#solutions', '#contact'];
-            for (const sectionId of sections) {
-                const element = document.querySelector(sectionId);
-                if (element) {
-                    const rect = element.getBoundingClientRect();
-                    if (rect.top <= 150 && rect.bottom >= 150) {
-                        setActiveSection(sectionId);
-                        break;
+            const sections = [
+                { id: '#hero', link: '#hero' },
+                { id: '#about', link: '#about' },
+                { id: '#solutions', link: '#solutions' },
+                { id: '#services', link: '#solutions' },
+                { id: '#our-capabilities', link: '#solutions' },
+                { id: '#ready-to-start', link: '#contact' },
+                { id: '#contact', link: '#contact' }
+            ];
+
+            let currentSection = '';
+
+            const isAtBottom = (window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 50;
+
+            if (isAtBottom) {
+                currentSection = '#contact';
+            } else {
+                for (const section of sections) {
+                    const element = document.querySelector(section.id);
+                    if (element) {
+                        const rect = element.getBoundingClientRect();
+                        if (rect.top <= 200 && rect.bottom >= 150) {
+                            currentSection = section.link;
+                            break;
+                        }
                     }
                 }
             }
+            setActiveSection(currentSection);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -37,10 +57,15 @@ const Navbar = () => {
         }
     };
 
+    const handleAuditClick = (e) => {
+        if (e) e.preventDefault();
+        window.location.href = "mailto:info@novasec.com?subject=Free%20Audit%20Request&body=I%20am%20interested%20in%20a%20free%20audit%20for%20my%20project.%20Here%20are%20my%20details:";
+    };
+
     const navLinks = [
-        { name: "About", href: "#about" },
-        { name: "Solutions", href: "#solutions" },
-        { name: "Contact", href: "#contact" },
+        { name: t('nav.about'), href: "#about" },
+        { name: t('nav.solutions'), href: "#solutions" },
+        { name: t('nav.contact'), href: "#ready-to-start" },
     ];
 
     return (
@@ -79,8 +104,8 @@ const Navbar = () => {
                                     href={link.href}
                                     onClick={(e) => scrollToSection(e, link.href)}
                                     className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-full ${isActive
-                                            ? 'text-white bg-white/10'
-                                            : 'text-white/70 hover:text-white hover:bg-white/5'
+                                        ? 'text-white bg-white/10'
+                                        : 'text-white/70 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
                                     {link.name}
@@ -90,14 +115,31 @@ const Navbar = () => {
                     </div>
 
                     {/* ACTIONS */}
-                    <div className="flex items-center gap-2">
-                        <a
-                            href="mailto:contact@novasec.com?subject=Free%20Audit%20Request&body=I%20am%20interested%20in%20a%20free%20audit%20for%20my%20project.%20Here%20are%20my%20details:"
-                            className="hidden md:flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full font-bold text-xs hover:bg-gray-200 transition-all active:scale-95"
+                    <div className="flex items-center gap-4">
+                        {/* LANGUAGE SELECTOR */}
+                        <div className="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 font-mono text-[10px] tracking-tighter">
+                            <button
+                                onClick={() => setLanguage('es')}
+                                className={`transition-all duration-300 ${language === 'es' ? 'text-white font-bold opacity-100' : 'text-white/30 hover:text-white/50'}`}
+                            >
+                                ES
+                            </button>
+                            <span className="w-[1px] h-3 bg-white/10" />
+                            <button
+                                onClick={() => setLanguage('en')}
+                                className={`transition-all duration-300 ${language === 'en' ? 'text-white font-bold opacity-100' : 'text-white/30 hover:text-white/50'}`}
+                            >
+                                EN
+                            </button>
+                        </div>
+
+                        <button
+                            onClick={handleAuditClick}
+                            className="hidden md:flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full font-bold text-xs hover:bg-gray-200 transition-all active:scale-95 cursor-pointer"
                         >
-                            Start Free Audit
+                            {t('nav.cta')}
                             <ArrowUpRight className="w-3 h-3" />
-                        </a>
+                        </button>
 
                         {/* MOBILE MENU TOGGLE */}
                         <button
@@ -132,12 +174,29 @@ const Navbar = () => {
                                 </a>
                             ))}
                             <div className="h-[1px] bg-white/10 w-full my-2" />
-                            <a
-                                href="mailto:contact@novasec.com?subject=Free%20Audit%20Request&body=I%20am%20interested%20in%20a%20free%20audit%20for%20my%20project.%20Here%20are%20my%20details:"
-                                className="block w-full p-4 text-center text-black font-bold bg-white rounded-2xl"
+                            <button
+                                onClick={handleAuditClick}
+                                className="block w-full p-4 text-center text-black font-bold bg-white rounded-2xl cursor-pointer"
                             >
-                                Start Free Audit
-                            </a>
+                                {t('nav.cta')}
+                            </button>
+
+                            {/* MOBILE LANGUAGE SELECTOR */}
+                            <div className="flex items-center justify-center gap-4 mt-6">
+                                <button
+                                    onClick={() => setLanguage('es')}
+                                    className={`text-sm font-bold transition-colors ${language === 'es' ? 'text-white' : 'text-white/40'}`}
+                                >
+                                    ESPAÑOL
+                                </button>
+                                <div className="w-1 h-1 bg-white/20 rounded-full" />
+                                <button
+                                    onClick={() => setLanguage('en')}
+                                    className={`text-sm font-bold transition-colors ${language === 'en' ? 'text-white' : 'text-white/40'}`}
+                                >
+                                    ENGLISH
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 )}

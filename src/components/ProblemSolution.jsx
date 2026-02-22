@@ -1,39 +1,41 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, ShieldCheck, Zap, Layers } from 'lucide-react';
-
-const solutions = [
-    {
-        id: 1,
-        title: "Speed",
-        subtitle: "Instant Load Times",
-        desc: "We don't optimize for seconds. We optimize for milliseconds. Next.js edge caching ensures your site loads before the user blinks.",
-        icon: Zap,
-        color: "from-amber-400 to-orange-500",
-        bg: "bg-orange-500/5"
-    },
-    {
-        id: 2,
-        title: "Design",
-        subtitle: "Aesthetic Dominance",
-        desc: "Bespoke visual identity that separates you from the templates. We craft digital experiences that feel expensive and exclusive.",
-        icon: Layers,
-        color: "from-indigo-400 to-cyan-500",
-        bg: "bg-indigo-500/5"
-    },
-    {
-        id: 3,
-        title: "Security",
-        subtitle: "Fortress Architecture",
-        desc: "Bank-grade encryption and automated threat detection. Your data is locked behind layers of modern cybersecurity protocols.",
-        icon: ShieldCheck,
-        color: "from-emerald-400 to-teal-500",
-        bg: "bg-emerald-500/5"
-    }
-];
+import { useLanguage } from '../context/LanguageContext';
 
 const ProblemSolution = () => {
+    const { t } = useLanguage();
     const [activeIndex, setActiveIndex] = useState(1); // Default center active
+
+    const solutions = [
+        {
+            id: 1,
+            title: t('problem_solution.solutions.0.title'),
+            subtitle: t('problem_solution.solutions.0.subtitle'),
+            desc: t('problem_solution.solutions.0.desc'),
+            icon: Zap,
+            color: "from-amber-400 to-orange-500",
+            bg: "bg-orange-500/5"
+        },
+        {
+            id: 2,
+            title: t('problem_solution.solutions.1.title'),
+            subtitle: t('problem_solution.solutions.1.subtitle'),
+            desc: t('problem_solution.solutions.1.desc'),
+            icon: Layers,
+            color: "from-indigo-400 to-cyan-500",
+            bg: "bg-indigo-500/5"
+        },
+        {
+            id: 3,
+            title: t('problem_solution.solutions.2.title'),
+            subtitle: t('problem_solution.solutions.2.subtitle'),
+            desc: t('problem_solution.solutions.2.desc'),
+            icon: ShieldCheck,
+            color: "from-emerald-400 to-teal-500",
+            bg: "bg-emerald-500/5"
+        }
+    ];
 
     return (
         <section id="solutions" className="py-40 bg-[#050505] relative z-30 overflow-hidden pb-60"> {/* Added pb-60 for connector space */}
@@ -44,8 +46,8 @@ const ProblemSolution = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     className="text-5xl md:text-7xl font-bold tracking-tighter text-white mb-6"
                 >
-                    FROM CHAOS <br />
-                    <span className="text-white/30 italic font-serif">TO CLARITY.</span>
+                    {t('problem_solution.title')} <br />
+                    <span className="text-white/30 italic font-serif">{t('problem_solution.subtitle')}</span>
                 </motion.h2>
             </div>
 

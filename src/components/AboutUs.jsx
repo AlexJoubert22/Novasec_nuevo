@@ -1,8 +1,10 @@
 import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 import { Target, Eye, Shield, Cpu } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const AboutUs = () => {
+    const { t } = useLanguage();
     const targetRef = useRef(null);
     const { scrollYProgress } = useScroll({
         target: targetRef,
@@ -32,8 +34,8 @@ const AboutUs = () => {
     const features = [
         {
             icon: Target,
-            title: "Precision Engineering",
-            desc: "Every pixel is calculated. Performance is not an afterthought, it's the foundation.",
+            title: t('about.features.precision.title'),
+            desc: t('about.features.precision.desc'),
             color: "text-amber-400",
             bg: "group-hover:bg-amber-500/10",
             border: "group-hover:border-amber-500/30",
@@ -41,8 +43,8 @@ const AboutUs = () => {
         },
         {
             icon: Eye,
-            title: "Visual Intelligence",
-            desc: "We don't just design websites. We design brand perception mechanics.",
+            title: t('about.features.visual.title'),
+            desc: t('about.features.visual.desc'),
             color: "text-indigo-400",
             bg: "group-hover:bg-indigo-500/10",
             border: "group-hover:border-indigo-500/30",
@@ -50,8 +52,8 @@ const AboutUs = () => {
         },
         {
             icon: Shield,
-            title: "Cyber Resilience",
-            desc: "Beauty with armor. Enterprise-grade security protocols woven into the UI.",
+            title: t('about.features.security.title'),
+            desc: t('about.features.security.desc'),
             color: "text-emerald-400",
             bg: "group-hover:bg-emerald-500/10",
             border: "group-hover:border-emerald-500/30",
@@ -59,8 +61,8 @@ const AboutUs = () => {
         },
         {
             icon: Cpu,
-            title: "Neural Automation",
-            desc: "Systems that think. We integrate AI workflows to scale your operations.",
+            title: t('about.features.automation.title'),
+            desc: t('about.features.automation.desc'),
             color: "text-rose-400",
             bg: "group-hover:bg-rose-500/10",
             border: "group-hover:border-rose-500/30",
@@ -86,10 +88,9 @@ const AboutUs = () => {
 
                         {/* Summary Paragraph */}
                         <div className="text-right">
-                            <h4 className="text-white text-sm md:text-lg font-bold mb-2">The Invisible Force.</h4>
+                            <h4 className="text-white text-sm md:text-lg font-bold mb-2">{t('about.force')}</h4>
                             <p className="text-white/70 text-xs md:text-sm font-light leading-relaxed hidden md:block">
-                                Novasec operates at the intersection of aesthetic dominance and technical rigor.
-                                We don't just build software; we engineer improvements to your bottom line.
+                                {t('about.manifesto')}
                             </p>
                         </div>
 
@@ -97,7 +98,7 @@ const AboutUs = () => {
                         <div className="text-right hidden md:block">
                             <div className="w-20 h-[1px] bg-white/20 mb-2 ml-auto" />
                             <p className="text-white/40 text-xs font-mono tracking-widest uppercase">
-                                / manifesto_v2.0
+                                {t('about.tag')}
                             </p>
                         </div>
                     </div>
@@ -105,13 +106,13 @@ const AboutUs = () => {
                     <div className="container mx-auto px-8 md:px-12 lg:px-20 relative z-10 max-w-5xl">
                         <div className="mb-8 md:mb-12">
                             <h2 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold tracking-tight text-white mb-4 md:mb-6 leading-tight break-words">
-                                WE ARE <br />
+                                {t('about.title')} <br />
                                 <span className={`text-transparent bg-clip-text bg-gradient-to-r transition-colors duration-1000 ${activeIndex === 0 ? "from-amber-300 to-orange-400" :
                                     activeIndex === 1 ? "from-indigo-300 to-cyan-400" :
                                         activeIndex === 2 ? "from-emerald-300 to-green-400" :
                                             "from-rose-300 to-pink-400"
                                     }`}>
-                                    ARCHITECTS
+                                    {t('about.architects')}
                                 </span>
                             </h2>
                         </div>

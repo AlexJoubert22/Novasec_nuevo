@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 import heroBg from '../assets/fondo_hero.jpeg';
 
 const Hero = () => {
+    const { t } = useLanguage();
     const containerRef = useRef(null);
 
     // Mapeamos el scroll del contenedor
@@ -90,7 +92,7 @@ const Hero = () => {
                             transition={{ delay: 1.5, duration: 1 }}
                             className="text-base md:text-xl lg:text-3xl text-white/80 mt-8 md:mt-12 font-light tracking-wide font-serif italic px-4"
                         >
-                            Tecnología moderna con trato humano.
+                            {t('hero.subtitle')}
                         </motion.p>
                     </motion.div>
                 </div>
