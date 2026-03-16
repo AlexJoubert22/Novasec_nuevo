@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaSec — Alta de Cliente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #07070f;
+      --surface:   #0f0f1c;
+      --surface2:  #161628;
+      --border:    #ffffff0f;
+      --border2:   #ffffff1a;
+      --accent:    #00C6FF;
+      --accent2:   #7b5ea7;
+      --green:     #00e676;
+      --red:       #ff5252;
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --mono:      'Space Mono', monospace;
+      --sans:      'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 0 0 80px;
+    }
+
+    /* ── HEADER ─────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+    .logo {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: .08em;
+    }
+    .logo span { color: var(--muted); }
+    .step-bar {
+      display: flex; gap: 6px; align-items: center;
+    }
+    .step-dot {
+      width: 28px; height: 4px; border-radius: 2px;
+      background: var(--border2);
+      transition: background .3s;
+    }
+    .step-dot.active  { background: var(--accent); }
+    .step-dot.done    { background: var(--green); }
+
+    /* ── LAYOUT ─────────────────────────────── */
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 24px 0;
+    }
+
+    /* ── SECTION TITLE ──────────────────────── */
+    .section-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .14em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .section-heading {
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    /* ── STEPS ──────────────────────────────── */
+    .step { display: none; }
+    .step.active { display: block; animation: fadeUp .35s ease; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── CARD ───────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title::before {
+      content: '';
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── FIELDS ─────────────────────────────── */
+    .field { margin-bottom: 20px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 7px;
+    }
+    label .req { color: var(--accent); margin-left: 2px; }
+    label .hint {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      appearance: none;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent)18;
+    }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+    select option { background: var(--surface2); }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 540px) { .field-row { grid-template-columns: 1fr; } }
+
+    /* ── FAQ / PRODUCT LISTS ────────────────── */
+    .list-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+    .list-item {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      padding: 14px;
+      position: relative;
+      animation: fadeUp .25s ease;
+    }
+    .list-item input, .list-item textarea {
+      background: var(--bg);
+      border-radius: 8px;
+      font-size: 13px;
+      padding: 9px 12px;
+      margin-bottom: 8px;
+    }
+    .list-item input:last-child,
+    .list-item textarea:last-child { margin-bottom: 0; }
+
+    .list-item-label {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--muted);
+      margin-bottom: 8px;
+      letter-spacing: .06em;
+    }
+
+    .btn-remove {
+      position: absolute; top: 10px; right: 10px;
+      width: 26px; height: 26px;
+      background: none; border: 1px solid var(--border2);
+      border-radius: 6px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, border-color .2s;
+    }
+    .btn-remove:hover { background: var(--red)22; border-color: var(--red)55; }
+    .btn-remove svg { pointer-events: none; }
+
+    .btn-add {
+      background: none;
+      border: 1px dashed var(--border2);
+      border-radius: 10px;
+      padding: 11px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 13px;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color .2s, color .2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── NAV BUTTONS ────────────────────────── */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+      gap: 12px;
+    }
+    .btn-back {
+      background: none;
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 12px 24px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 14px;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+    .btn-back:hover { border-color: var(--text); color: var(--text); }
+
+    .btn-next {
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 32px;
+      color: #000;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s, transform .2s;
+      display: flex; align-items: center; gap: 8px;
+      margin-left: auto;
+    }
+    .btn-next:hover { opacity: .88; transform: translateY(-1px); }
+
+    .btn-generate {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 10px;
+      padding: 14px 36px;
+      color: #fff;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s, transform .2s;
+      display: flex; align-items: center; gap: 10px;
+      width: 100%;
+      justify-content: center;
+      margin-top: 32px;
+      box-shadow: 0 8px 32px var(--accent)33;
+    }
+    .btn-generate:hover { opacity: .9; transform: translateY(-2px); }
+
+    /* ── OUTPUT ─────────────────────────────── */
+    #output-section { display: none; }
+    #output-section.visible { display: block; animation: fadeUp .4s ease; }
+
+    .output-tabs {
+      display: flex; gap: 4px;
+      margin-bottom: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: none; border: none;
+      border-radius: 9px;
+      padding: 9px;
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .tab-btn.active {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .code-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .code-block pre {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #a5f3fc;
+      overflow-x: auto;
+      white-space: pre;
+      max-height: 380px;
+      overflow-y: auto;
+      line-height: 1.7;
+    }
+    .code-block pre::-webkit-scrollbar { width: 4px; height: 4px; }
+    .code-block pre::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+    .btn-copy {
+      position: absolute; top: 14px; right: 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color .2s, border-color .2s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .btn-copy:hover { color: var(--accent); border-color: var(--accent); }
+    .btn-copy.copied { color: var(--green); border-color: var(--green); }
+
+    .instructions-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .inst-step {
+      display: flex; gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .inst-step:last-child { border-bottom: none; padding-bottom: 0; }
+    .inst-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent)18;
+      border: 1px solid var(--accent)33;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .inst-text { font-size: 13px; line-height: 1.6; color: var(--text); }
+    .inst-text strong { color: var(--accent); }
+    .inst-text code {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      padding: 1px 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #a5f3fc;
+    }
+
+    /* ── BADGE SUCCESS ──────────────────────── */
+    .success-badge {
+      background: var(--green)12;
+      border: 1px solid var(--green)33;
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 24px;
+    }
+    .success-badge svg { flex-shrink: 0; }
+    .success-badge p { font-size: 14px; line-height: 1.5; color: var(--text); }
+    .success-badge p span { color: var(--green); font-weight: 600; }
+
+    /* ── VALIDATION ─────────────────────────── */
+    .field-error {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 5px;
+      display: none;
+    }
+    input.error, textarea.error, select.error {
+      border-color: var(--red);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">NOVA<span>SEC</span> / onboarding</div>
+  <div class="step-bar">
+    <div class="step-dot active" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+    <div class="step-dot" id="dot-3"></div>
+    <div class="step-dot" id="dot-4"></div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ───── STEP 1: Información básica ───── -->
+  <div class="step active" id="step-1">
+    <div class="section-title">Paso 1 de 4</div>
+    <h1 class="section-heading">Información del negocio</h1>
+    <p class="section-sub">Datos básicos que usará el asistente para identificar y representar al negocio.</p>
+
+    <div class="card">
+      <div class="card-title">Identidad</div>
+      <div class="field">
+        <label>Nombre del negocio <span class="req">*</span></label>
+        <input type="text" id="negocio" placeholder="Ej: Tienda López, Academia English Pro…">
+        <div class="field-error" id="err-negocio">Campo obligatorio</div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Sector <span class="req">*</span></label>
+          <select id="sector">
+            <option value="">Selecciona…</option>
+            <option>Alimentación</option>
+            <option>Restauración</option>
+            <option>Academia / Educación</option>
+            <option>Salud / Estética</option>
+            <option>Deportes / Fitness</option>
+            <option>Taller / Mecánica</option>
+            <option>Peluquería / Barbería</option>
+            <option>Retail / Moda</option>
+            <option>Servicios profesionales</option>
+            <option>Otro</option>
+          </select>
+          <div class="field-error" id="err-sector">Campo obligatorio</div>
+        </div>
+        <div class="field">
+          <label>Teléfono de contacto <span class="req">*</span></label>
+          <input type="tel" id="telefono" placeholder="600 000 000">
+          <div class="field-error" id="err-telefono">Campo obligatorio</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Dirección física</label>
+        <input type="text" id="direccion" placeholder="Calle Mayor 12, Madrid">
+      </div>
+      <div class="field">
+        <label>URL de la web</label>
+        <input type="url" id="web" placeholder="https://negocio.vercel.app">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Horario y operativa</div>
+      <div class="field">
+        <label>Horario de apertura <span class="req">*</span></label>
+        <input type="text" id="horario" placeholder="Lunes a Viernes 9:00–18:00, Sábados 10:00–14:00">
+        <div class="field-error" id="err-horario">Campo obligatorio</div>
+      </div>
+      <div class="field">
+        <label>Telegram Chat ID del negocio <span class="req">*</span>
+          <span class="hint">— número que obtienes con getUpdates</span>
+        </label>
+        <input type="text" id="telegram_id" placeholder="Ej: -1001234567890">
+        <div class="field-error" id="err-telegram">Campo obligatorio</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-next" onclick="goTo(2)">
+        Siguiente
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+          <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ───── STEP 2: FAQs ───── -->
+  <div class="step" id="step-2">
+    <div class="section-title">Paso 2 de 4</div>
+    <h1 class="section-heading">Preguntas frecuentes</h1>
+    <p class="section-sub">El asistente usará estas respuestas para atender dudas básicas de los clientes. Añade al menos 3.</p>
+
+    <div class="card">
+      <div class="card-title">FAQs del negocio</div>
+      <div class="list-wrap" id="faq-list"></div>
+      <button class="btn-add" onclick="addFaq()" style="margin-top:12px">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        Añadir pregunta
+      </button>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(1)">← Atrás</button>
+      <button class="btn-next" onclick="goTo(3)">
+        Siguiente
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+          <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ───── STEP 3: Productos ───── -->
+  <div class="step" id="step-3">
+    <div class="section-title">Paso 3 de 4</div>
+    <h1 class="section-heading">Productos y servicios</h1>
+    <p class="section-sub">Lista lo que ofrece el negocio. El asistente podrá informar sobre ello y gestionar pedidos.</p>
+
+    <div class="card">
+      <div class="card-title">Catálogo</div>
+      <div class="list-wrap" id="product-list"></div>
+      <button class="btn-add" onclick="addProduct()" style="margin-top:12px">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        Añadir producto o servicio
+      </button>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(2)">← Atrás</button>
+      <button class="btn-next" onclick="goTo(4)">
+        Siguiente
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+          <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ───── STEP 4: Revisión ───── -->
+  <div class="step" id="step-4">
+    <div class="section-title">Paso 4 de 4</div>
+    <h1 class="section-heading">Revisión final</h1>
+    <p class="section-sub">Confirma los datos antes de generar la configuración lista para n8n.</p>
+
+    <div class="card" id="review-card">
+      <!-- populated by JS -->
+    </div>
+
+    <button class="btn-generate" onclick="generate()">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+        <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Generar configuración para n8n
+    </button>
+
+    <div class="nav" style="margin-top:16px">
+      <button class="btn-back" onclick="goTo(3)">← Atrás</button>
+    </div>
+  </div>
+
+  <!-- ───── OUTPUT ───── -->
+  <div id="output-section">
+    <div class="success-badge">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="#00e676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="m9 11 3 3L22 4" stroke="#00e676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p>Configuración generada. <span>Copia el código JS</span> y pégalo en el nodo <span>Variables Cliente</span> de n8n.</p>
+    </div>
+
+    <div class="output-tabs">
+      <button class="tab-btn active" onclick="switchTab('js')">Código n8n (JS)</button>
+      <button class="tab-btn" onclick="switchTab('widget')">Snippet Widget</button>
+      <button class="tab-btn" onclick="switchTab('guide')">Instrucciones</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-js">
+      <div class="code-block">
+        <button class="btn-copy" onclick="copyCode('code-js', this)">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
+            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Copiar
+        </button>
+        <pre id="code-js"></pre>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-widget">
+      <div class="code-block">
+        <button class="btn-copy" onclick="copyCode('code-widget', this)">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
+            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Copiar
+        </button>
+        <pre id="code-widget"></pre>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-guide">
+      <div class="instructions-card">
+        <div class="inst-step">
+          <div class="inst-num">1</div>
+          <div class="inst-text">En n8n, abre el workflow <strong>NovaSec — Chatbot Base</strong>. Si es un cliente nuevo, duplícalo primero.</div>
+        </div>
+        <div class="inst-step">
+          <div class="inst-num">2</div>
+          <div class="inst-text">Haz clic en el nodo <strong>Variables Cliente</strong>. Borra el contenido actual del campo <code>jsCode</code> y pega el código generado en la pestaña <strong>Código n8n</strong>.</div>
+        </div>
+        <div class="inst-step">
+          <div class="inst-num">3</div>
+          <div class="inst-text">En el nodo <strong>Webhook</strong>, cambia el path a <code>chat-[slug-del-negocio]</code> para que sea único por cliente.</div>
+        </div>
+        <div class="inst-step">
+          <div class="inst-num">4</div>
+          <div class="inst-text">Activa el workflow con el toggle <strong>Active</strong>. Copia la URL del webhook.</div>
+        </div>
+        <div class="inst-step">
+          <div class="inst-num">5</div>
+          <div class="inst-text">En la web del cliente en Vercel, pega el <strong>Snippet Widget</strong> de la pestaña correspondiente antes del cierre <code>&lt;/body&gt;</code>. Sustituye la URL del webhook.</div>
+        </div>
+        <div class="inst-step">
+          <div class="inst-num">6</div>
+          <div class="inst-text">Haz un test enviando un mensaje desde la web. Verifica que llega la notificación al <strong>Telegram del negocio</strong>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // ── STATE ──────────────────────────────────────
+  let currentStep = 1;
+  const totalSteps = 4;
+
+  // ── NAVIGATION ─────────────────────────────────
+  function goTo(step) {
+    if (step > currentStep && !validateStep(currentStep)) return;
+
+    document.getElementById('step-' + currentStep).classList.remove('active');
+    document.getElementById('dot-' + currentStep).classList.remove('active');
+    document.getElementById('dot-' + currentStep).classList.add('done');
+
+    currentStep = step;
+
+    document.getElementById('step-' + currentStep).classList.add('active');
+    document.getElementById('dot-' + currentStep).classList.remove('done');
+    document.getElementById('dot-' + currentStep).classList.add('active');
+
+    if (step === 4) buildReview();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── VALIDATION ─────────────────────────────────
+  function validateStep(step) {
+    if (step === 1) {
+      let ok = true;
+      const fields = [
+        { id: 'negocio',    err: 'err-negocio' },
+        { id: 'sector',     err: 'err-sector' },
+        { id: 'telefono',   err: 'err-telefono' },
+        { id: 'horario',    err: 'err-horario' },
+        { id: 'telegram_id',err: 'err-telegram' },
+      ];
+      fields.forEach(({ id, err }) => {
+        const el = document.getElementById(id);
+        const er = document.getElementById(err);
+        if (!el.value.trim()) {
+          el.classList.add('error');
+          er.style.display = 'block';
+          ok = false;
+        } else {
+          el.classList.remove('error');
+          er.style.display = 'none';
+        }
+      });
+      return ok;
+    }
+    return true;
+  }
+
+  // ── FAQ ────────────────────────────────────────
+  let faqCount = 0;
+  function addFaq(q = '', a = '') {
+    faqCount++;
+    const id = 'faq-' + faqCount;
+    const wrap = document.createElement('div');
+    wrap.className = 'list-item';
+    wrap.id = id;
+    wrap.innerHTML = `
+      <div class="list-item-label">FAQ #${faqCount}</div>
+      <button class="btn-remove" onclick="removeItem('${id}')">
+        <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
+          <path d="M18 6 6 18M6 6l12 12" stroke="#ff5252" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <input type="text" placeholder="¿Cuál es vuestro horario?" value="${escAttr(q)}" data-faq-q>
+      <textarea placeholder="Respuesta que dará el asistente…" data-faq-a rows="2">${escAttr(a)}</textarea>
+    `;
+    document.getElementById('faq-list').appendChild(wrap);
+  }
+
+  // ── PRODUCTS ───────────────────────────────────
+  let prodCount = 0;
+  function addProduct(v = '') {
+    prodCount++;
+    const id = 'prod-' + prodCount;
+    const wrap = document.createElement('div');
+    wrap.className = 'list-item';
+    wrap.id = id;
+    wrap.innerHTML = `
+      <div class="list-item-label">Producto / Servicio #${prodCount}</div>
+      <button class="btn-remove" onclick="removeItem('${id}')">
+        <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
+          <path d="M18 6 6 18M6 6l12 12" stroke="#ff5252" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <input type="text" placeholder="Bocadillo de jamón — 3.50€" value="${escAttr(v)}" data-product>
+    `;
+    document.getElementById('product-list').appendChild(wrap);
+  }
+
+  function removeItem(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  }
+
+  // ── COLLECT DATA ───────────────────────────────
+  function collectData() {
+    const faqs = [];
+    document.querySelectorAll('#faq-list .list-item').forEach(item => {
+      const q = item.querySelector('[data-faq-q]').value.trim();
+      const a = item.querySelector('[data-faq-a]').value.trim();
+      if (q && a) faqs.push({ pregunta: q, respuesta: a });
+    });
+
+    const productos = [];
+    document.querySelectorAll('#product-list .list-item').forEach(item => {
+      const v = item.querySelector('[data-product]').value.trim();
+      if (v) productos.push(v);
+    });
+
+    return {
+      negocio:     val('negocio'),
+      sector:      val('sector'),
+      telefono:    val('telefono'),
+      direccion:   val('direccion'),
+      web:         val('web'),
+      horario:     val('horario'),
+      telegram_id: val('telegram_id'),
+      faqs,
+      productos
+    };
+  }
+
+  function val(id) { return document.getElementById(id).value.trim(); }
+
+  // ── REVIEW ─────────────────────────────────────
+  function buildReview() {
+    const d = collectData();
+    const card = document.getElementById('review-card');
+    card.innerHTML = `
+      <div class="card-title">Resumen de datos</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:13px;">
+        ${row('Negocio', d.negocio)}
+        ${row('Sector', d.sector)}
+        ${row('Teléfono', d.telefono)}
+        ${row('Horario', d.horario)}
+        ${row('Dirección', d.direccion || '—')}
+        ${row('Web', d.web || '—')}
+        ${row('Telegram ID', d.telegram_id)}
+        ${row('FAQs añadidas', d.faqs.length + '')}
+        ${row('Productos añadidos', d.productos.length + '')}
+      </div>
+    `;
+  }
+  function row(k, v) {
+    return `<div><div style="color:var(--muted);font-size:11px;margin-bottom:3px">${k}</div><div style="font-weight:500">${escHtml(v)}</div></div>`;
+  }
+
+  // ── GENERATE ───────────────────────────────────
+  function generate() {
+    const d = collectData();
+    const slug = d.negocio.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+
+    const faqsJs = d.faqs.map(f =>
+      `    {\n      pregunta: ${JSON.stringify(f.pregunta)},\n      respuesta: ${JSON.stringify(f.respuesta)}\n    }`
+    ).join(',\n');
+
+    const prodJs = d.productos.map(p => `    ${JSON.stringify(p)}`).join(',\n');
+
+    const jsCode = `// ─────────────────────────────────────────────────────
+// CLIENTE: ${d.negocio}
+// Generado por NovaSec Onboarding — ${new Date().toLocaleDateString('es-ES')}
+// ─────────────────────────────────────────────────────
+
+const config = {
+  negocio:   ${JSON.stringify(d.negocio)},
+  sector:    ${JSON.stringify(d.sector)},
+  horario:   ${JSON.stringify(d.horario)},
+  telefono:  ${JSON.stringify(d.telefono)},
+  direccion: ${JSON.stringify(d.direccion)},
+  web:       ${JSON.stringify(d.web)},
+
+  faqs: [
+${faqsJs}
+  ],
+
+  productos: [
+${prodJs}
+  ],
+
+  telegram_chat_id: ${JSON.stringify(d.telegram_id)}
+};
+
+const body      = $input.first().json.body;
+const mensaje   = body.message || body.mensaje || body.text || "";
+const sesion_id = body.sesion_id || body.session_id || "sin-sesion";
+
+return [{
+  json: {
+    config,
+    mensaje,
+    sesion_id,
+    timestamp: new Date().toISOString()
+  }
+}];`;
+
+    const widgetSnippet = `<!-- NovaSec Widget — ${d.negocio} -->
+<script>
+  window.NovaSec = {
+    webhook:    "https://TU-VPS-IP:5678/webhook/chat-${slug}",
+    botName:    "Asistente ${d.negocio}",
+    welcomeMsg: "¡Hola! Soy el asistente de ${d.negocio}. ¿En qué puedo ayudarte?",
+    color:      "#00C6FF"
+  };
+<\/script>
+<script src="https://cdn.novasec.vercel.app/novasec-widget.js"><\/script>`;
+
+    document.getElementById('code-js').textContent     = jsCode;
+    document.getElementById('code-widget').textContent = widgetSnippet;
+
+    const out = document.getElementById('output-section');
+    out.classList.add('visible');
+
+    // Scroll to output
+    setTimeout(() => out.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }
+
+  // ── TABS ───────────────────────────────────────
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      const names = ['js','widget','guide'];
+      b.classList.toggle('active', names[i] === name);
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => {
+      p.classList.toggle('active', p.id === 'tab-' + name);
+    });
+  }
+
+  // ── COPY ───────────────────────────────────────
+  function copyCode(elId, btn) {
+    const text = document.getElementById(elId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.childNodes[1].textContent = ' Copiado';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.childNodes[1].textContent = ' Copiar';
+      }, 2200);
+    });
+  }
+
+  // ── UTILS ──────────────────────────────────────
+  function escHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function escAttr(s) {
+    return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // ── INIT ───────────────────────────────────────
+  // Pre-populate with 3 default FAQs and 3 products
+  addFaq('¿Cuál es vuestro horario?', '');
+  addFaq('¿Dónde estáis ubicados?', '');
+  addFaq('¿Aceptáis tarjeta?', 'Sí, aceptamos tarjeta y efectivo.');
+  addProduct('');
+  addProduct('');
+
+  // Clear errors on input
+  ['negocio','sector','telefono','horario','telegram_id'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function() {
+      this.classList.remove('error');
+      const err = document.getElementById('err-' + (id === 'telegram_id' ? 'telegram' : id));
+      if (err) err.style.display = 'none';
+    });
+  });
+</script>
+</body>
+</html>
